@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,26 @@ interface Character {
   parents?: string[];
   children?: string[];
 }
+
+const getClassIcon = (profession: string) => {
+  if (profession.includes("Паладин")) return "Shield";
+  if (profession.includes("Воин")) return "Sword";
+  if (profession.includes("Лекарь") || profession.includes("лекаря"))
+    return "Heart";
+  if (profession.includes("Кузнец")) return "Hammer";
+  if (profession.includes("Охотник") || profession.includes("охотник"))
+    return "Target";
+  if (profession.includes("Ткачиха")) return "Scissors";
+  if (profession.includes("Друг зверей")) return "Dog";
+  if (profession.includes("Наблюдательница")) return "Eye";
+  if (profession.includes("Следопыт")) return "Compass";
+  if (profession.includes("Ремесленник")) return "Wrench";
+  if (profession.includes("Основатель")) return "Crown";
+  if (profession.includes("Хранительница")) return "Home";
+  if (profession.includes("Старейшина")) return "Users";
+  if (profession.includes("Страж")) return "ShieldCheck";
+  return "User";
+};
 
 const familyData: Character[] = [
   // Дедушки и бабушки
@@ -147,7 +167,7 @@ const familyData: Character[] = [
   {
     name: "Фенрир",
     age: 21,
-    profession: "Воин-охотник",
+    profession: "Монах (Воин-охотник)",
     generation: "children",
     family: "Бьёрн-Лифа",
     parents: ["Бьёрн", "Лифа"],
@@ -192,6 +212,25 @@ const Index = () => {
   );
   const [masterNotes, setMasterNotes] = useState<{ [key: string]: string }>({});
 
+  // Загрузка заметок из localStorage при загрузке компонента
+  useEffect(() => {
+    const savedNotes = localStorage.getItem("dnd-family-notes");
+    if (savedNotes) {
+      try {
+        setMasterNotes(JSON.parse(savedNotes));
+      } catch (error) {
+        console.error("Error loading notes:", error);
+      }
+    }
+  }, []);
+
+  // Сохранение заметок в localStorage при изменении
+  const updateNotes = (characterName: string, notes: string) => {
+    const newNotes = { ...masterNotes, [characterName]: notes };
+    setMasterNotes(newNotes);
+    localStorage.setItem("dnd-family-notes", JSON.stringify(newNotes));
+  };
+
   const getCharactersByGeneration = (generation: string) => {
     return familyData.filter((char) => char.generation === generation);
   };
@@ -205,10 +244,14 @@ const Index = () => {
   const CharacterCard = ({ character }: { character: Character }) => (
     <Dialog>
       <DialogTrigger asChild>
-        <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-amber-800 hover:border-amber-600">
+        <Card className="cursor-pointer hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-amber-800 hover:border-amber-600 hover:scale-105 hover:rotate-1 animate-fade-in group">
           <CardHeader className="pb-2">
             <CardTitle className="text-amber-900 font-bold text-lg flex items-center gap-2">
-              <Icon name="User" size={20} className="text-amber-700" />
+              <Icon
+                name={getClassIcon(character.profession)}
+                size={20}
+                className="text-amber-700 group-hover:text-amber-600 transition-colors"
+              />
               {character.name}
             </CardTitle>
           </CardHeader>
@@ -216,7 +259,7 @@ const Index = () => {
             <div className="space-y-2">
               <Badge
                 variant="outline"
-                className="bg-amber-100 text-amber-800 border-amber-600"
+                className="bg-amber-100 text-amber-800 border-amber-600 group-hover:bg-amber-200 transition-colors"
               >
                 {character.profession}
               </Badge>
@@ -230,24 +273,34 @@ const Index = () => {
           </CardContent>
         </Card>
       </DialogTrigger>
-      <DialogContent className="max-w-md bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-amber-800">
+      <DialogContent className="max-w-md bg-gradient-to-br from-amber-50 to-orange-100 border-2 border-amber-800 animate-scale-in">
         <DialogHeader>
           <DialogTitle className="text-amber-900 flex items-center gap-2">
-            <Icon name="Shield" size={24} className="text-amber-700" />
+            <Icon
+              name={getClassIcon(character.profession)}
+              size={24}
+              className="text-amber-700"
+            />
             {character.name}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="font-semibold text-amber-800 mb-2">Профессия</h4>
+              <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-1">
+                <Icon name="Briefcase" size={16} />
+                Профессия
+              </h4>
               <Badge className="bg-amber-700 text-amber-100">
                 {character.profession}
               </Badge>
             </div>
             {character.age && (
               <div>
-                <h4 className="font-semibold text-amber-800 mb-2">Возраст</h4>
+                <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-1">
+                  <Icon name="Calendar" size={16} />
+                  Возраст
+                </h4>
                 <p className="text-amber-700">{character.age} лет</p>
               </div>
             )}
@@ -255,33 +308,35 @@ const Index = () => {
 
           {character.spouse && (
             <div>
-              <h4 className="font-semibold text-amber-800 mb-2">Супруг(а)</h4>
+              <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-1">
+                <Icon name="Heart" size={16} />
+                Супруг(а)
+              </h4>
               <p className="text-amber-700">{character.spouse}</p>
             </div>
           )}
 
           {character.parents && (
             <div>
-              <h4 className="font-semibold text-amber-800 mb-2">Родители</h4>
+              <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-1">
+                <Icon name="Users" size={16} />
+                Родители
+              </h4>
               <p className="text-amber-700">{character.parents.join(", ")}</p>
             </div>
           )}
 
           <div>
-            <h4 className="font-semibold text-amber-800 mb-2">
+            <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-1">
+              <Icon name="ScrollText" size={16} />
               Заметки мастера
             </h4>
             <textarea
-              className="w-full p-2 border border-amber-600 rounded bg-amber-50 text-amber-900 placeholder-amber-600"
+              className="w-full p-3 border border-amber-600 rounded-lg bg-amber-50 text-amber-900 placeholder-amber-600 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all"
               placeholder="Добавить заметки о персонаже..."
               rows={3}
               value={masterNotes[character.name] || ""}
-              onChange={(e) =>
-                setMasterNotes({
-                  ...masterNotes,
-                  [character.name]: e.target.value,
-                })
-              }
+              onChange={(e) => updateNotes(character.name, e.target.value)}
             />
           </div>
         </div>
@@ -305,19 +360,24 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-stone-900 via-amber-900 to-stone-800 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Заголовок */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-amber-100 mb-4 font-serif">
-            ᚱᚢᚾᛁᚲ ᚠᚨᛗᛁᛚᚤ ᛏᚱᛖᛖ
-          </h1>
-          <h2 className="text-3xl text-amber-200 mb-6">Семейное Древо ДНД</h2>
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="relative">
+            <h1 className="text-6xl font-bold text-amber-100 mb-4 font-serif rune-text animate-pulse">
+              ᚱᚢᚾᛁᚲ ᚠᚨᛗᛁᛚᚤ ᛏᚱᛖᛖ
+            </h1>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-300 to-transparent opacity-20 blur-xl animate-pulse"></div>
+          </div>
+          <h2 className="text-4xl text-amber-200 mb-6 animate-fade-in font-runic">
+            Семейное Древо ДНД
+          </h2>
           <div className="flex justify-center gap-4 mb-8">
-            <Button className="bg-amber-700 hover:bg-amber-600 text-amber-100 border border-amber-600">
+            <Button className="bg-amber-700 hover:bg-amber-600 text-amber-100 border border-amber-600 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
               <Icon name="Download" size={16} className="mr-2" />
               Экспорт древа
             </Button>
             <Button
               variant="outline"
-              className="border-amber-600 text-amber-100 hover:bg-amber-800"
+              className="border-amber-600 text-amber-100 hover:bg-amber-800 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               <Icon name="ScrollText" size={16} className="mr-2" />
               Заметки мастера
@@ -326,10 +386,19 @@ const Index = () => {
         </div>
 
         {/* Дедушки и бабушки */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold text-amber-200 mb-8 text-center flex items-center justify-center gap-2">
-            <Icon name="Crown" size={24} className="text-amber-400" />
+        <div className="mb-16 animate-fade-in">
+          <h3 className="text-3xl font-bold text-amber-200 mb-8 text-center flex items-center justify-center gap-2 font-runic">
+            <Icon
+              name="Crown"
+              size={28}
+              className="text-amber-400 animate-pulse"
+            />
             Старейшины Рода
+            <Icon
+              name="Crown"
+              size={28}
+              className="text-amber-400 animate-pulse"
+            />
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Семья Рагнар-Хельвия */}
@@ -364,14 +433,23 @@ const Index = () => {
 
         {/* Линия соединения */}
         <div className="flex justify-center mb-12">
-          <div className="w-32 h-0.5 bg-amber-600 opacity-60"></div>
+          <div className="w-32 h-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent opacity-60 animate-pulse"></div>
         </div>
 
         {/* Родители */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold text-amber-200 mb-8 text-center flex items-center justify-center gap-2">
-            <Icon name="Users" size={24} className="text-amber-400" />
+        <div className="mb-16 animate-fade-in">
+          <h3 className="text-3xl font-bold text-amber-200 mb-8 text-center flex items-center justify-center gap-2 font-runic">
+            <Icon
+              name="Users"
+              size={28}
+              className="text-amber-400 animate-pulse"
+            />
             Родители
+            <Icon
+              name="Users"
+              size={28}
+              className="text-amber-400 animate-pulse"
+            />
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Семья Рагнар-Хельвия */}
@@ -404,14 +482,23 @@ const Index = () => {
 
         {/* Линия соединения */}
         <div className="flex justify-center mb-12">
-          <div className="w-32 h-0.5 bg-amber-600 opacity-60"></div>
+          <div className="w-32 h-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent opacity-60 animate-pulse"></div>
         </div>
 
         {/* Дети */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold text-amber-200 mb-8 text-center flex items-center justify-center gap-2">
-            <Icon name="Sword" size={24} className="text-amber-400" />
+        <div className="mb-16 animate-fade-in">
+          <h3 className="text-3xl font-bold text-amber-200 mb-8 text-center flex items-center justify-center gap-2 font-runic">
+            <Icon
+              name="Sword"
+              size={28}
+              className="text-amber-400 animate-pulse"
+            />
             Новое Поколение
+            <Icon
+              name="Sword"
+              size={28}
+              className="text-amber-400 animate-pulse"
+            />
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Дети Рагнар-Хельвия */}
@@ -443,11 +530,13 @@ const Index = () => {
         </div>
 
         {/* Футер */}
-        <div className="text-center mt-16 pt-8 border-t border-amber-600 opacity-60">
-          <p className="text-amber-300 font-serif">
+        <div className="text-center mt-16 pt-8 border-t border-amber-600 opacity-60 animate-fade-in">
+          <p className="text-amber-300 font-serif rune-text text-lg">
             ᚦᛁᛋ ᛁᛋ ᚦᛖ ᛚᛖᚷᚨᚲᚤ ᛟᚠ ᛟᚢᚱ ᚨᚾᚲᛖᛋᛏᛟᚱᛋ
           </p>
-          <p className="text-amber-400 mt-2">Это наследие наших предков</p>
+          <p className="text-amber-400 mt-2 text-lg font-runic">
+            Это наследие наших предков
+          </p>
         </div>
       </div>
     </div>
