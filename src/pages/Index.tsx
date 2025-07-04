@@ -367,22 +367,9 @@ const Index = () => {
             </h1>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-300 to-transparent opacity-20 blur-xl animate-pulse"></div>
           </div>
-          <h2 className="text-4xl text-amber-200 mb-6 animate-fade-in font-runic">
+          <h2 className="text-4xl text-amber-200 mb-12 animate-fade-in font-runic">
             Семейное Древо ДНД
           </h2>
-          <div className="flex justify-center gap-4 mb-8">
-            <Button className="bg-amber-700 hover:bg-amber-600 text-amber-100 border border-amber-600 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-              <Icon name="Download" size={16} className="mr-2" />
-              Экспорт древа
-            </Button>
-            <Button
-              variant="outline"
-              className="border-amber-600 text-amber-100 hover:bg-amber-800 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              <Icon name="ScrollText" size={16} className="mr-2" />
-              Заметки мастера
-            </Button>
-          </div>
         </div>
 
         {/* Дедушки и бабушки */}
