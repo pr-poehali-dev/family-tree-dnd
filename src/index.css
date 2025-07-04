@@ -1,36 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 28 25% 9%;
+    --foreground: 45 100% 85%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 45 20% 95%;
+    --card-foreground: 28 25% 9%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 45 20% 95%;
+    --popover-foreground: 28 25% 9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 32 65% 55%;
+    --primary-foreground: 45 100% 85%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 32 30% 75%;
+    --secondary-foreground: 28 25% 9%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 32 30% 85%;
+    --muted-foreground: 28 25% 35%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 32 30% 75%;
+    --accent-foreground: 28 25% 9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 32 50% 65%;
+    --input: 32 50% 65%;
+    --ring: 32 65% 55%;
 
     --radius: 0.5rem;
 
@@ -97,5 +99,16 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: "Cinzel", serif;
+  }
+
+  .font-runic {
+    font-family: "Cinzel Decorative", serif;
+  }
+
+  .rune-text {
+    font-family: "Cinzel Decorative", serif;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
   }
 }
